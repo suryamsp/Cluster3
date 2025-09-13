@@ -30,81 +30,50 @@ export default function App() {
   const handleDownloadImage = () => {
     if (!finalResult) return;
 
-    const padding = 20;
-    const lineHeight = 30;
-    const canvasWidth = 800;
-    const canvasHeight = Object.keys(finalResult).length * lineHeight + padding * 5 + lineHeight; // extra for title + headers
+    // Create table content as SVG (acts like an image)
+    let rows = Object.keys(finalResult).map(
+      (key) =>
+        `<tr>
+          <td style="border:1px solid #000; padding:5px;">${key}</td>
+          <td style="border:1px solid #000; padding:5px; text-align:center;">${finalResult[key]}</td>
+        </tr>`
+    ).join("");
 
-    const canvas = document.createElement("canvas");
-    canvas.width = canvasWidth;
-    canvas.height = canvasHeight;
-    const ctx = canvas.getContext("2d");
+    let svg = `
+      <svg xmlns="http://www.w3.org/2000/svg" width="360" height="${Object.keys(finalResult).length * 30 + 60}">
+        <foreignObject width="100%" height="100%">
+          <div xmlns="http://www.w3.org/1999/xhtml" style="font-family: Arial; font-size:14px; background:#fff; padding:10px; text-align:center;">
+            <h3 style="margin-bottom:10px;">Final Result</h3>
+            <table style="width:100%; border-collapse:collapse; text-align:center;">
+              <thead>
+                <tr>
+                  <th style="border:1px solid #000; padding:5px;">Name</th>
+                  <th style="border:1px solid #000; padding:5px;">Value</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${rows}
+              </tbody>
+            </table>
+          </div>
+        </foreignObject>
+      </svg>
+    `;
 
-    // Background
-    ctx.fillStyle = "#1e1e1e";
-    ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+    const blob = new Blob([svg], { type: "image/svg+xml;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
 
-    // Table title (centered)
-    ctx.fillStyle = "#fff";
-    ctx.font = "20px Arial";
-    ctx.textBaseline = "top";
-    const titleText = "Cluster 3 Result";
-    const titleWidth = ctx.measureText(titleText).width;
-    ctx.fillText(titleText, (canvasWidth - titleWidth) / 2, padding);
-
-    // Column headers
-    const startY = padding + lineHeight + 10;
-    ctx.fillStyle = "#e0e0e0";
-    ctx.font = "16px Arial";
-
-    const col1X = padding;
-    const col2X = canvasWidth / 2 + 10;
-    ctx.fillText("Title", col1X + 50, startY); // adjust for visual centering
-    ctx.fillText("PPS Value", col2X, startY);
-
-    // Horizontal line below headers
-    ctx.strokeStyle = "#555";
-    ctx.lineWidth = 1;
-    ctx.beginPath();
-    ctx.moveTo(padding, startY + lineHeight - 5);
-    ctx.lineTo(canvasWidth - padding, startY + lineHeight - 5);
-    ctx.stroke();
-
-    let y = startY + lineHeight;
-
-    Object.entries(finalResult).forEach(([title, value]) => {
-      // Draw text
-      ctx.fillStyle = "#e0e0e0";
-      ctx.fillText(title, col1X, y + 5);
-      ctx.fillText(value, col2X, y + 5);
-
-      // Horizontal line for each row
-      ctx.strokeStyle = "#555";
-      ctx.beginPath();
-      ctx.moveTo(padding, y + lineHeight);
-      ctx.lineTo(canvasWidth - padding, y + lineHeight);
-      ctx.stroke();
-
-      y += lineHeight;
-    });
-
-    // Vertical line separating columns
-    ctx.beginPath();
-    ctx.moveTo(canvasWidth / 2, startY - 5);
-    ctx.lineTo(canvasWidth / 2, canvasHeight - padding);
-    ctx.stroke();
-
-    // Download
     const link = document.createElement("a");
-    link.href = canvas.toDataURL("image/png");
-    link.download = "final_result_table.png";
+    link.href = url;
+    link.download = "final_result.svg";
     link.click();
+
+    URL.revokeObjectURL(url);
   };
 
   return (
-    <div style={{ padding:"20px", fontFamily:"Arial", background:"#121212", color:"#e0e0e0", minHeight:"100vh" }}>
+    <div style={{ padding:"20px", fontFamily:"Arial", background:"#f4f4f4", minHeight:"100vh" }}>
       <h1 style={{ textAlign:"center" }}>Cluster 3</h1>
-
       <form onSubmit={handleSubmit} style={{ maxWidth:"500px", margin:"0 auto" }}>
         {names.map((name) => (
           <div key={name} style={{ marginBottom:"10px" }}>
@@ -115,7 +84,7 @@ export default function App() {
               value={formData[name]}
               onChange={handleChange}
               placeholder="Enter number"
-              style={{ width:"100%", padding:"8px", marginTop:"4px", borderRadius:"6px", border:"1px solid #444", background:"#2b2b2b", color:"#e0e0e0" }}
+              style={{ width:"100%", padding:"8px", marginTop:"4px", borderRadius:"6px", border:"1px solid #444" }}
             />
           </div>
         ))}
@@ -123,30 +92,25 @@ export default function App() {
       </form>
 
       {finalResult && (
-        <div style={{ maxWidth:"700px", margin:"20px auto", display:"flex", flexDirection:"column", gap:"10px" }}>
-          {/* HTML Table */}
-          <table style={{ width:"100%", borderCollapse:"collapse", background:"#1e1e1e", color:"#e0e0e0" }}>
+        <div style={{ maxWidth:"500px", margin:"20px auto" }}>
+          <h2 style={{ textAlign:"center", marginBottom:"10px" }}>Final Result</h2>
+          <table style={{ width:"100%", borderCollapse:"collapse", textAlign:"center" }}>
             <thead>
               <tr>
-                <th colSpan={2} style={{ border: "1px solid #555", padding:"10px", textAlign:"center", fontSize:"18px" }}>Cluster 3 Result</th>
-              </tr>
-              <tr>
-                <th style={{ border: "1px solid #555", padding:"8px", textAlign:"center" }}>Title</th>
-                <th style={{ border: "1px solid #555", padding:"8px", textAlign:"center" }}>PPS Value</th>
+                <th style={{ border:"1px solid #000", padding:"8px" }}>Name</th>
+                <th style={{ border:"1px solid #000", padding:"8px" }}>Value</th>
               </tr>
             </thead>
             <tbody>
-              {Object.entries(finalResult).map(([title, value]) => (
-                <tr key={title}>
-                  <td style={{ border: "1px solid #555", padding:"8px", textAlign:"left" }}>{title}</td>
-                  <td style={{ border: "1px solid #555", padding:"8px", textAlign:"center" }}>{value}</td>
+              {Object.keys(finalResult).map((key) => (
+                <tr key={key}>
+                  <td style={{ border:"1px solid #000", padding:"8px" }}>{key}</td>
+                  <td style={{ border:"1px solid #000", padding:"8px", textAlign:"center" }}>{finalResult[key]}</td>
                 </tr>
               ))}
             </tbody>
           </table>
-
-          {/* Download Button */}
-          <button onClick={handleDownloadImage} style={{ width:"100%", padding:"12px", border:"none", borderRadius:"6px", background:"#28a745", color:"#fff", fontWeight:"bold", cursor:"pointer" }}>Download Image</button>
+          <button onClick={handleDownloadImage} style={{ marginTop:"15px", width:"100%", padding:"12px", border:"none", borderRadius:"6px", background:"#28a745", color:"#fff", fontWeight:"bold", cursor:"pointer" }}>Download Image</button>
         </div>
       )}
     </div>
