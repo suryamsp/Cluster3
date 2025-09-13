@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-export default function Cluster3Form() {
+export default function App() {
   const [formData, setFormData] = useState({
     Nuri: "",
     Ozone: "",
