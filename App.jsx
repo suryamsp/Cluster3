@@ -1,41 +1,8 @@
 import React, { useState } from "react";
 
 export default function App() {
-  const names = [
-    "Newry sheetala",
-    "Ozone G block",
-    "Ozone F block",
-    "Ozone E1",
-    "Ozone D1",
-    "Ozone E2",
-    "Ozone D2",
-    "Ozone E6",
-    "Ozone E4",
-    "Ozone E3",
-    "Ozone D3",
-    "Ozone E2",
-    "Pearl Park view",
-    "Indiabulls",
-    "Isha",
-    "Rams sarovar",
-    "Mugunthan",
-    "KG Eyes",
-    "Ruby pride",
-    "Coromandel coral",
-    "Khurinjis",
-    "Paramount",
-    "Appaswasmy mapleyon",
-    "Akash Ganga to Natwest vijay",
-    "Ars Elite to Kirsha emerald",
-    "Sindur green",
-    "Sis Danube",
-    "Newry shanmita",
-    "Casagrand",
-    "Oliyas",
-    "Newry shernika"
-  ];
+  const names = ["Newry sheetala","Ozone G block","Ozone F block","Ozone E1","Ozone D1","Ozone E2","Ozone D2","Ozone E6","Ozone E4","Ozone E3","Ozone D3","Ozone E2","Pearl Park view","Indiabulls","Isha","Rams sarovar","Mugunthan","KG Eyes","Ruby pride","Coromandel coral","Khurinjis","Paramount","Appaswasmy mapleyon","Akash Ganga to Natwest vijay","Ars Elite to Kirsha emerald","Sindur green","Sis Danube","Newry shanmita","Casagrand","Oliyas","Newry shernika"];
 
-  // Only first and last input default to "1"
   const initialFormData = names.reduce((acc, name, index) => {
     acc[name] = (index === 0 || index === names.length - 1) ? "1" : "";
     return acc;
@@ -46,67 +13,73 @@ export default function App() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    if (/^\d*$/.test(value)) {
-      setFormData({ ...formData, [name]: value });
-      setFinalResult(null); // reset result when changing input
-    }
+    if (/^\d*$/.test(value)) setFormData({ ...formData, [name]: value });
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const result = {};
     let cumulative = 0;
+    const result = {};
     names.forEach((name) => {
-      const val = Number(formData[name] || 0);
-      cumulative += val;
+      cumulative += Number(formData[name] || 0);
       result[name] = cumulative;
     });
     setFinalResult(result);
-    setFormData(initialFormData); // reset form (first & last = 1)
   };
 
-  const handleDownload = () => {
+  const handleDownloadImage = () => {
     if (!finalResult) return;
-    let content = "Final Result:\n";
-    Object.keys(finalResult).forEach((key) => {
-      content += `${key} = ${finalResult[key]}\n`;
+
+    const padding = 20;
+    const lineHeight = 30;
+    const gap = 10; // gap between title and value
+    const canvasWidth = 800;
+    const canvasHeight = Object.keys(finalResult).length * lineHeight + padding * 2;
+
+    const canvas = document.createElement("canvas");
+    canvas.width = canvasWidth;
+    canvas.height = canvasHeight;
+    const ctx = canvas.getContext("2d");
+
+    // Background
+    ctx.fillStyle = "#1e1e1e";
+    ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+
+    // Draw table header
+    ctx.fillStyle = "#e0e0e0";
+    ctx.font = "16px Arial";
+    ctx.textBaseline = "top";
+    ctx.fillText("Title", padding, padding);
+    ctx.fillText("PPS Value", canvasWidth/2 + gap, padding);
+
+    // Draw a line below header
+    ctx.strokeStyle = "#555";
+    ctx.beginPath();
+    ctx.moveTo(padding, padding + lineHeight - 5);
+    ctx.lineTo(canvasWidth - padding, padding + lineHeight - 5);
+    ctx.stroke();
+
+    // Draw each row
+    let y = padding + lineHeight;
+    Object.entries(finalResult).forEach(([title, value]) => {
+      ctx.fillText(title, padding, y);
+      ctx.fillText(value, canvasWidth/2 + gap, y);
+      y += lineHeight;
     });
-    const blob = new Blob([content], { type: "text/plain" });
+
+    // Download
     const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = "final_result.txt";
+    link.href = canvas.toDataURL("image/png");
+    link.download = "final_result.png";
     link.click();
   };
 
   return (
-    <div className="form-container">
-      <style>{`
-        body { margin:0; background:#121212; color:#e0e0e0; font-family:Arial,sans-serif; }
-        .form-container { width:95%; max-width:500px; margin:20px auto; padding:20px; border-radius:12px; background:#1e1e1e; box-shadow:0 2px 8px rgba(0,0,0,0.5);}
-        h1 { text-align:center; margin-bottom:20px; font-size:1.6rem; color:#fff; }
-        .form-row { display:flex; flex-direction:column; margin-bottom:12px; }
-        label { margin-bottom:5px; font-size:0.95rem; font-weight:600; color:#ccc; }
-        input { padding:10px; border:1px solid #444; border-radius:8px; background:#2b2b2b; color:#e0e0e0; font-size:1rem; }
-        input::placeholder { color:#888; }
-        button { display:block; width:100%; margin-top:12px; padding:14px; border:none; border-radius:8px; cursor:pointer; font-size:1rem; font-weight:bold; }
-        .submit-btn { background-color:#007bff; color:white; }
-        .submit-btn:hover { background-color:#0056b3; }
-        .download-btn { background-color:#28a745; color:white; }
-        .download-btn:hover { background-color:#1e7e34; }
-        .result-box { margin-top:20px; }
-        .result-box h3 { margin-bottom:10px; font-size:1.2rem; text-align:center; color:#fff; }
-        table { width:100%; border-collapse:collapse; margin-bottom:15px; }
-        th, td { border:1px solid #555; padding:10px; text-align:center; font-size:0.9rem; }
-        th { background-color:#2b2b2b; }
-        td { background-color:#1e1e1e; }
-        @media(max-width:480px) { .form-container { padding:15px; } input { padding:8px; font-size:0.85rem; } button { padding:10px; font-size:0.85rem; } table th, table td { padding:6px; font-size:0.8rem; } }
-      `}</style>
-
-      <h1>Cluster 3</h1>
-
-      <form onSubmit={handleSubmit}>
+    <div style={{ padding:"20px", fontFamily:"Arial", background:"#121212", color:"#e0e0e0", minHeight:"100vh" }}>
+      <h1 style={{ textAlign:"center" }}>Cluster 3</h1>
+      <form onSubmit={handleSubmit} style={{ maxWidth:"500px", margin:"0 auto" }}>
         {names.map((name) => (
-          <div key={name} className="form-row">
+          <div key={name} style={{ marginBottom:"10px" }}>
             <label>{name}</label>
             <input
               type="text"
@@ -114,30 +87,31 @@ export default function App() {
               value={formData[name]}
               onChange={handleChange}
               placeholder="Enter number"
+              style={{ width:"100%", padding:"8px", marginTop:"4px", borderRadius:"6px", border:"1px solid #444", background:"#2b2b2b", color:"#e0e0e0" }}
             />
           </div>
         ))}
-
-        <button type="submit" className="submit-btn">Submit</button>
+        <button type="submit" style={{ width:"100%", padding:"12px", border:"none", borderRadius:"6px", background:"#007bff", color:"#fff", fontWeight:"bold", cursor:"pointer" }}>Submit</button>
       </form>
 
       {finalResult && (
-        <div className="result-box">
-          <h3>Final Result</h3>
-          <table>
-            <thead>
-              <tr><th>Title</th><th>PPS Value</th></tr>
-            </thead>
-            <tbody>
-              {Object.keys(finalResult).map((key) => (
-                <tr key={key}>
-                  <td>{key}</td>
-                  <td>{finalResult[key]}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          <button onClick={handleDownload} className="download-btn">Download Result</button>
+        <div style={{ maxWidth:"600px", margin:"20px auto", display:"flex", flexDirection:"column", gap:"10px" }}>
+          {/* Table style */}
+          <div style={{ background:"#1e1e1e", padding:"10px", borderRadius:"8px" }}>
+            <div style={{ display:"flex", gap:"10px", fontWeight:"bold", paddingBottom:"5px", borderBottom:"1px solid #555" }}>
+              <span style={{ flex:1 }}>Title</span>
+              <span style={{ flex:1 }}>PPS Value</span>
+            </div>
+            {Object.entries(finalResult).map(([title, value]) => (
+              <div key={title} style={{ display:"flex", gap:"10px", padding:"5px 0" }}>
+                <span style={{ flex:1 }}>{title}</span>
+                <span style={{ flex:1 }}>{value}</span>
+              </div>
+            ))}
+          </div>
+
+          {/* Download button */}
+          <button onClick={handleDownloadImage} style={{ width:"100%", padding:"12px", border:"none", borderRadius:"6px", background:"#28a745", color:"#fff", fontWeight:"bold", cursor:"pointer" }}>Download Image</button>
         </div>
       )}
     </div>
