@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 
 export default function App() {
-  const names = ["Newry sheetala","Ozone G block","Ozone F block","Ozone E1","Ozone D1","Ozone E2","Ozone D2","Ozone E6","Ozone E4","Ozone E3","Ozone D3","Ozone E2","Pearl Park view","Indiabulls","Isha","Rams sarovar","Mugunthan","KG Eyes","Ruby pride","Coromandel coral","Khurinjis","Paramount","Appaswasmy mapleyon","Akash Ganga to Natwest vijay","Ars Elite to Kirsha emerald","Sindur green","Sis Danube","Newry shanmita","Casagrand","Oliyas","Newry shernika"];
+  const names = ["Newry sheetala","Ozone G block","Ozone F block","Ozone E1","Ozone D1","Ozone E2","Ozone D2","Ozone E6","Ozone E4","Ozone E3","Ozone D3","Tower E2","Pearl Park view","Indiabulls","Isha","Rams sarovar","Mugunthan","KG Eyes","Ruby pride","Coromandel coral","Khurinjis","Paramount","Appaswasmy mapleyon","Akash Ganga to Natwest vijay","Ars Elite to Kirsha emerald","Sindur green","Sis Danube","Newry shanmita","Casagrand","Oliyas","Newry shernika"];
 
   const initialFormData = names.reduce((acc, name, index) => {
     acc[name] = (index === 0 || index === names.length - 1) ? "1" : "";
