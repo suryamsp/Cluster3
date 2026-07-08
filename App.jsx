@@ -2,13 +2,8 @@
 
 export default function App() {
   const names = [
-    "Pearl Park view", "Ozone G block", "Ozone F block", "Ozone E1",
-    "Ozone D1", "Ozone E2", "Ozone D2", "Ozone E6", "Ozone E4", "Ozone E3",
-    "Ozone D3", "Tower E2", "Indiabulls", "Isha", "Rams sarovar", "Mugunthan",
-    "KG Eyes", "Ruby pride", "Coromandel coral", "Khurinjis", "Paramount",
-    "Appaswasmy mapleyon", "Casagrand", "Newry shanmita",
-    "Akash Ganga to Natwest vijay", "Ars Elite to Kirsha emerald",
-    "Sindur green", "Sis Danube", "Oliyas", "Newry shernika", "Newry sheetala"
+    "FREN", "H", "G", "F",
+    "E", "D", "C", "B", "A"
   ];
 
   const initialFormData = names.reduce((acc, name) => {
