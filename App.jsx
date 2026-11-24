@@ -2,8 +2,8 @@
 
 export default function App() {
   const names = [
-    "FREN", "H", "G", "F",
-    "E", "D", "C", "B", "A"
+    "casagrand", "Emmbassy" ,"FREN", "H", "G", "F",
+    "E", "D", "C", "B", "A", "single order", "AKS", "Glo and mallis", "color Homes"
   ];
 
   const initialFormData = names.reduce((acc, name) => {
