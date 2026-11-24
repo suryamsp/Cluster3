@@ -39,7 +39,7 @@ export default function App() {
         minHeight: "100vh",
       }}
     >
-      <h1 style={{ textAlign: "center", marginBottom: "20px" }}>Cluster 3</h1>
+      <h1 style={{ textAlign: "center", marginBottom: "20px" }}>Cluster 6</h1>
 
       <form
         onSubmit={handleSubmit}
